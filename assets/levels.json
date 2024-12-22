@@ -1,3 +1,29 @@
 {
-    "employee":{"name":"John", "age":30, "city":"New York"}
-}
+    "levels": [
+      {
+        "level": 1,
+        "rows": 5,
+        "columns": 10,
+        "bricks": [
+          { "row": 0, "column": 0, "sprite": "assets/images/tiles/tileSlimGray0.png", "lives": 1 },
+          { "row": 0, "column": 1, "sprite": "assets/images/tiles/tileSlimGray1.png", "lives": 1 },
+          { "row": 0, "column": 2, "sprite": "assets/images/tiles/tileSlimRed0.png", "lives": 2 },
+          { "row": 1, "column": 0, "sprite": "assets/images/tiles/tileSlimGreen1.png", "lives": 1 },
+          { "row": 1, "column": 3, "sprite": "assets/images/tiles/tileSlimOrange2.png", "lives": 3 }
+        ]
+      },
+      {
+        "level": 2,
+        "rows": 7,
+        "columns": 12,
+        "bricks": [
+          { "row": 0, "column": 0, "sprite": "assets/images/tiles/tileSlimPurple0.png", "lives": 1 },
+          { "row": 0, "column": 1, "sprite": "assets/images/tiles/tileSlimYellow1.png", "lives": 2 },
+          { "row": 0, "column": 2, "sprite": "assets/images/tiles/tileSlimRed2.png", "lives": 1 },
+          { "row": 2, "column": 4, "sprite": "assets/images/tiles/tileThickGray0.png", "lives": 3 },
+          { "row": 3, "column": 5, "sprite": "assets/images/tiles/tileSlimGreen2.png", "lives": 2 }
+        ]
+      }
+    ]
+  }
+  
