@@ -4,7 +4,7 @@ export default class GameScene extends Phaser.Scene {
     }
   
     preload() {
-      this.load.image('playButton', 'assets/images/buttons/play.png'); // Obrázok tlačidla
+      
     }
   
     create() {

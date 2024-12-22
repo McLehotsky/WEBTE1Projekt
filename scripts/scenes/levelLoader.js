@@ -6,7 +6,7 @@ export default class LevelLoader {
     async loadLevel(levelNumber) {
       try {
         // Načítanie JSON súboru
-        const response = await fetch('assets/images/levels.json');
+        const response = await fetch('assets/levels.json');
         const data = await response.json();
   
         // Získanie dát pre konkrétnu úroveň
@@ -25,14 +25,14 @@ export default class LevelLoader {
     }
   
     createBricks(levelData) {
-      const { bricks, brickWidth, brickHeight } = levelData;
+      const { bricks, brickWidth = 32, brickHeight = 16 } = levelData;
   
       bricks.forEach(brick => {
         const x = brick.column * brickWidth + brickWidth / 2;
         const y = brick.row * brickHeight + brickHeight / 2;
-  
+        console.log(`Vytváram tehličku na (${x}, ${y}) so sprite: ${brick.sprite}`);
         // Pridanie tehličky do scény
-        const newBrick = this.scene.physics.add.sprite(x, y, 'brickSprite');
+        const newBrick = this.scene.physics.add.sprite(x, y, brick.sprite);
         newBrick.setTexture(brick.sprite); // Nastavenie správneho sprite
         newBrick.setOrigin(0.5); // Zarovnanie stredu
         newBrick.setImmovable(true); // Tehličky sa nepohybujú
