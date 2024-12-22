@@ -1,4 +1,4 @@
-import GameScene from './scenes/game.js';
+import GameScene from './game.js';
 import PlayScene from './scenes/play.js';
 
 const config = {
@@ -12,7 +12,7 @@ const config = {
       debug: false,
     },
   },
-  scene: [GameScene, PlayScene], // Zoznam scén
+  scene: [PlayScene], // Zoznam scén
 };
 
 const game = new Phaser.Game(config);
