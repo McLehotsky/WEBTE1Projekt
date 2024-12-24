@@ -25,12 +25,23 @@ export default class LevelLoader {
     }
   
     createBricks(levelData) {
-      const { bricks, brickWidth = 32, brickHeight = 16 } = levelData;
+      const { bricks, brickWidth, brickHeight, rows, columns } = levelData;
   
+      // Vypočítanie celkovej šírky a výšky tehličiek
+      const totalBricksWidth = columns * brickWidth;
+      const totalBricksHeight = rows * brickHeight;
+
+      // Vypočítanie počiatočnej X a Y pozície na centrovanie
+      const startX = (this.scene.scale.width - totalBricksWidth) / 2;
+      const startY = (this.scene.scale.height - totalBricksHeight) / 4 + 10; // Začíname 1/4 výšky obrazovky
+
       bricks.forEach(brick => {
-        const x = brick.column * brickWidth + brickWidth / 2;
-        const y = brick.row * brickHeight + brickHeight / 2;
+        const x = startX + brick.column * (brickWidth + 7); // Horizontálny rozostup +10 px
+        const y = startY + brick.row * (brickHeight + 2); // Vertikálny rozostup +5 px
+
+        
         console.log(`Vytváram tehličku na (${x}, ${y}) so sprite: ${brick.sprite}`);
+        
         // Pridanie tehličky do scény
         const newBrick = this.scene.physics.add.sprite(x, y, brick.sprite);
         newBrick.setTexture(brick.sprite); // Nastavenie správneho sprite

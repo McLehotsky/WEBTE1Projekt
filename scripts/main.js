@@ -3,8 +3,9 @@ import PlayScene from './scenes/play.js';
 
 const config = {
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
+  width: 500,
+  height: 450,
+  zoom: 2,
   pixelArt: true,
   physics: {
     default: 'arcade',
