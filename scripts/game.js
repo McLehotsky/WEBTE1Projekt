@@ -1,19 +1,38 @@
 export default class GameScene extends Phaser.Scene {
-    constructor() {
-      super('GameScene');
-    }
-  
-    preload() {
-      
-    }
-  
-    create() {
-      this.add.text(300, 200, 'Breakout Game', { fontSize: '32px', fill: '#fff' });
-  
-      // Tlačidlo pre začatie hry
-      const playButton = this.add.sprite(400, 300, 'playButton').setInteractive();
-      playButton.on('pointerdown', () => {
-        this.scene.start('PlayScene'); // Prepnutie na hlavnú scénu hry
-      });
-    }
+  constructor() {
+    super('GameScene');
   }
+
+  preload() {
+    this.load.image('playButton', 'assets/images/ui/PlayButton.png');
+    this.load.image('playButtonPressed', 'assets/images/ui/PlayButtonpressed.png');
+  }
+
+  create() {
+    const { width, height } = this.scale; // Získanie šírky a výšky scény
+
+    // Pridanie textu na stred obrazovky
+    this.add.text(width / 2, height / 2 - 50, 'Breakout Game', {
+      fontSize: '32px',
+      fill: '#fff',
+    }).setOrigin(0.5); // Nastavenie stredu textu ako referenčného bodu
+
+    // Pridanie tlačidla na stred obrazovky pod text
+    const playButton = this.add.sprite(width / 2, height / 2 + 20, 'playButton').setInteractive();
+    playButton.setOrigin(0.5); // Nastavenie stredu tlačidla ako referenčného bodu
+
+    // Spracovanie udalostí pre tlačidlo
+    playButton.on('pointerdown', () => {
+      playButton.setTexture('playButtonPressed'); // Zmena na stlačený sprite
+    });
+
+    playButton.on('pointerup', () => {
+      playButton.setTexture('playButton'); // Zmena späť na normálny sprite
+      this.scene.start('PlayScene'); // Prepnutie na PlayScene pri uvoľnení tlačidla
+    });
+
+    playButton.on('pointerout', () => {
+      playButton.setTexture('playButton'); // Zmena späť na normálny sprite, ak ukazovateľ opustí tlačidlo
+    });
+  }
+}
