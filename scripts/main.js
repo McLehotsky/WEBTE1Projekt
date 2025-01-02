@@ -1,6 +1,9 @@
 import GameScene from './game.js';
-import ParticleTestScene from './scenes/ParticleTestScene.js';
 import PlayScene from './scenes/play.js';
+import GameOverScene from './scenes/gameOver.js'
+import GameVictoryScene from './scenes/victory.js'
+import PauseScene from './scenes/pause.js'
+
 
 const config = {
   type: Phaser.AUTO,
@@ -15,7 +18,7 @@ const config = {
       debug: false,
     },
   },
-  scene: [GameScene, PlayScene], // Zoznam scén
+  scene: [GameScene, PlayScene, GameOverScene, GameVictoryScene, PauseScene], // Zoznam scén
 };
 
 const game = new Phaser.Game(config);
