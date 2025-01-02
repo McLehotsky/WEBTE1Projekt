@@ -136,6 +136,15 @@ export default class PlayScene extends Phaser.Scene {
     this.bounceSound = this.sound.add('bounce');
     this.explosionSound = this.sound.add('explosion');
 
+    this.PlayerLives = 3;
+
+
+      // Pridaj event na stlačenie ESC pre pauzu
+      this.input.keyboard.on('keydown-ESC', () => {
+        this.scene.pause(); // Pauznutie hry
+        this.scene.launch('PauseScene'); // Spustenie PauseMenu scény
+    });
+
   }
 
   update() {
@@ -154,6 +163,13 @@ export default class PlayScene extends Phaser.Scene {
     // Kontrola, či lopta spadla
     if (this.ball.y > this.scale.height) {
       this.resetBall(); // Reštart lopty
+      this.PlayerLives -= 1;
+      console.log(`Lives ${this.PlayerLives}...`);
+    }
+
+    if(this.PlayerLives <= 0)
+    {
+      this.GameOver();
     }
 
     this.ensureConstantBallSpeed();
@@ -307,15 +323,16 @@ export default class PlayScene extends Phaser.Scene {
       this.resetBall();
     } else {
       console.log('Žiadne ďalšie levely, ukončenie hry.');
-      this.endGame();
+      //this.endGame();
     }
   }
 
   /*
   FUNKCIA NA KONIEC HRY
    */
-  endGame() {
+  GameOver() {
     console.log('Hra skončila!');
     this.scene.start('GameOverScene'); // Prepnutie na scénu Game Over (ak existuje)
+    this.scene.stop();
   }
 }
