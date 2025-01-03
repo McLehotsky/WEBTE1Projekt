@@ -59,6 +59,7 @@ export default class PlayScene extends Phaser.Scene {
   }
 
   create() {
+
     const reservedTopSpace = 50; // Rezervovaná oblasť na skóre a pauzu
     const worldWidth = 360; // Logická šírka herného sveta
     const worldHeight = 640; // Logická výška herného sveta
@@ -74,10 +75,12 @@ export default class PlayScene extends Phaser.Scene {
     // Nastavenie kamery (ak používaš kameru)
     this.cameras.main.setBounds(0, 0, worldWidth, worldHeight);
 
+    // Inicializácia zoznamu odohraných levelov
+    this.playedLevels = new Set();
 
-    this.currentLevel = 5; // Začiatok na leveli 1
-    this.levelLoader = new LevelLoader(this);
-    this.loadLevel(this.currentLevel);
+    // Zavolanie funkcie na načítanie prvého náhodného levelu
+    this.loadRandomFirstLevel();
+
 
 //###############PARRTICLES##################//
     // Vytvorenie particlového systému s konfiguráciou
@@ -207,6 +210,28 @@ export default class PlayScene extends Phaser.Scene {
     }
 
     this.ensureConstantBallSpeed();
+  }
+
+  /*
+  ASYNC FUNKCIA NA NACITANIE NAHODNEHO PRVEHO LEVELU
+  */
+  async loadRandomFirstLevel() {
+    // Načíta údaje z JSON súboru
+    const response = await fetch('assets/levels.json');
+    const data = await response.json();
+
+    // Vyber náhodný level
+    const randomIndex = Math.floor(Math.random() * data.levels.length);
+    this.currentLevel = data.levels[randomIndex].level;
+
+    // Pridaj náhodný level do zoznamu odohraných
+    this.playedLevels.add(this.currentLevel);
+
+    console.log(`Načítavam prvý náhodný level ${this.currentLevel}...`);
+
+    // Načítanie prvého levelu
+    this.levelLoader = new LevelLoader(this);
+    this.loadLevel(this.currentLevel); // Nie je potrebné await, ak sa používa v ne-async funkcii
   }
 
   /*
@@ -342,24 +367,38 @@ export default class PlayScene extends Phaser.Scene {
 
   /*
   FUNKCIA NA NACITANIE NOVEHO LEVELU
-   */
+  */
   async loadNextLevel() {
-    const nextLevel = this.currentLevel + 1;
-  
+    // Ak ešte nemáš, inicializuj zoznam odohraných levelov
+    if (!this.playedLevels) {
+      this.playedLevels = new Set();
+    }
+
     // Načíta údaje z JSON súboru
     const response = await fetch('assets/levels.json');
     const data = await response.json();
-    const levelData = data.levels.find(level => level.level === nextLevel);
-  
-    if (levelData) {
-      console.log(`Načítavam level ${nextLevel}...`);
-      await this.loadLevel(nextLevel); // Volanie asynchrónnej funkcie na načítanie levelu
-      this.resetBall();
-    } else {
+
+    // Filtruj levely, ktoré ešte neboli odohrané
+    const remainingLevels = data.levels.filter(level => !this.playedLevels.has(level.level));
+
+    if (remainingLevels.length === 0) {
       console.log('Žiadne ďalšie levely, ukončenie hry.');
-      //this.endGame();
+      // this.endGame();
+      return;
     }
-  }
+
+    // Vyber náhodný level z dostupných
+    const randomIndex = Math.floor(Math.random() * remainingLevels.length);
+    const nextLevel = remainingLevels[randomIndex].level;
+
+    // Pridaj level do zoznamu odohraných
+    this.playedLevels.add(nextLevel);
+
+    console.log(`Načítavam náhodný level ${nextLevel}...`);
+    await this.loadLevel(nextLevel); // Volanie asynchrónnej funkcie na načítanie levelu
+    this.resetBall();
+}
+
 
   /*
   FUNKCIA NA KONIEC HRY
