@@ -7,10 +7,14 @@ import PauseScene from './scenes/pause.js'
 
 const config = {
   type: Phaser.AUTO,
-  width: 500,
-  height: 450,
-  zoom: 2,
+  width: 360,
+  height: 640,
+  zoom: 1,
   pixelArt: true,
+  scale: {
+    mode: Phaser.Scale.FIT, // Automaticky upraví veľkosť tak, aby sa zmestila na obrazovku
+    autoCenter: Phaser.Scale.CENTER_BOTH // Centrovanie hry vertikálne aj horizontálne
+  },
   physics: {
     default: 'arcade',
     arcade: {
@@ -19,6 +23,7 @@ const config = {
     },
   },
   scene: [GameScene, PlayScene, GameOverScene, GameVictoryScene, PauseScene], // Zoznam scén
+  backgroundColor: '#dde364' // Nastavenie čierneho pozadia
 };
 
 const game = new Phaser.Game(config);
