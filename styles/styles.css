@@ -1,3 +1,14 @@
+@font-face {
+    font-family: 'm6x11'; /* Názov, ktorý použiješ v CSS */
+    src: url('../assets/fonts/m6x11.ttf') format('truetype'); /* Cesta k fontu */
+    font-weight: normal; /* Váha fontu (napr. bold, light) */
+    font-style: normal; /* Štýl fontu (napr. italic) */
+}
+
+body {
+    font-family: 'm6x11'; /* Názov fontu a záložný font */
+}
+
 canvas {
     image-rendering: pixelated;
     image-rendering: crisp-edges;

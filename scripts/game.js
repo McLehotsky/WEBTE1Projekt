@@ -6,6 +6,7 @@ export default class GameScene extends Phaser.Scene {
   preload() {
     this.load.image('playButton', 'assets/images/ui/PlayButton.png');
     this.load.image('playButtonPressed', 'assets/images/ui/PlayButtonpressed.png');
+    this.add.text(0, 0, 'Loading...', { fontFamily: 'm6x11', fontSize: '16px' });
   }
 
   create() {
@@ -15,6 +16,7 @@ export default class GameScene extends Phaser.Scene {
     this.add.text(width / 2, height / 2 - 50, 'Breakout Game', {
       fontSize: '32px',
       fill: '#fff',
+      fontFamily: 'm6x11' 
     }).setOrigin(0.5); // Nastavenie stredu textu ako referenčného bodu
 
     // Pridanie tlačidla na stred obrazovky pod text
