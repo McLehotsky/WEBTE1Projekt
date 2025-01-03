@@ -53,21 +53,29 @@ export default class PlayScene extends Phaser.Scene {
     // Načítanie zvukových efektov
     this.load.audio('bounce', 'assets/sounds/bounceSound.wav'); // Zvuk odrazu
     this.load.audio('explosion', 'assets/sounds/boom3.wav'); // Zvuk výbuchu
+
+    this.load.image('pauseButton', 'assets/images/ui/PauseButton.png');
+    this.load.image('pauseButtonPressed', 'assets/images/ui/PauseButtonpressed.png');
   }
 
   create() {
-    this.physics.world.setBounds(50, 0, this.scale.width - 100, this.scale.height);
-    // Vykreslenie farby pozadia vo vnútri hraníc
-    const graphics = this.add.graphics();
-    graphics.fillStyle(0x2a9d8f, 1); // Nastavenie farby (hex kód, nepriehľadnosť)
-    graphics.fillRect(
-      50, // X-pozícia začiatku hraníc
-      0,  // Y-pozícia začiatku hraníc
-      this.scale.width - 100, // Šírka hernej plochy
-      this.scale.height       // Výška hernej plochy
+    const reservedTopSpace = 50; // Rezervovaná oblasť na skóre a pauzu
+    const worldWidth = 360; // Logická šírka herného sveta
+    const worldHeight = 640; // Logická výška herného sveta
+
+    // Nastavenie world bounds (herného sveta)
+    this.physics.world.setBounds(
+        0,                // Začiatok na X-osi
+        reservedTopSpace, // Začiatok na Y-osi (pod rezervovanou oblasťou)
+        worldWidth,       // Šírka sveta
+        worldHeight - reservedTopSpace // Výška sveta bez rezervovanej oblasti
     );
 
-    this.currentLevel = 1; // Začiatok na leveli 1
+    // Nastavenie kamery (ak používaš kameru)
+    this.cameras.main.setBounds(0, 0, worldWidth, worldHeight);
+
+
+    this.currentLevel = 5; // Začiatok na leveli 1
     this.levelLoader = new LevelLoader(this);
     this.loadLevel(this.currentLevel);
 
@@ -115,18 +123,27 @@ export default class PlayScene extends Phaser.Scene {
 //###################SCORE###################//
     // Skórovací systém
     this.score = 0; // Inicializácia skóre
-    this.scoreText = this.add.text(10, 10, 'Score: 0', {
-      fontSize: '16px',
-      fill: '#fff',
-    }); // Zobrazenie skóre v ľavom hornom rohu
+    this.scoreText = this.add.text(
+      this.scale.width / 2, // Stred obrazovky
+      20,                  // Vzdialenosť od vrchu
+      `${this.score}`,      // Zobrazované skóre
+      {
+          fontSize: '24px',
+          color: '#ffffff',
+          fontFamily: 'Arial',
+      }
+  ).setOrigin(0.5, 0.5); // Nastaví stred textu ako bod ukotvenia
 
 
 //###############CONTROLS##############//
-    // Ovládanie pomocou myši
+    // Ovládanie paddle myšou
     this.input.on('pointermove', pointer => {
-      // Aktualizácia pozície paddle podľa myši
-      this.paddle.x = Phaser.Math.Clamp(pointer.x, 50 + this.paddle.width / 2, this.scale.width - 50 - this.paddle.width / 2);
-    });
+      this.paddle.x = Phaser.Math.Clamp(
+          pointer.x,                              // Pozícia myši
+          this.paddle.width / 2,                  // Minimálna hodnota
+          worldWidth - this.paddle.width / 2      // Maximálna hodnota
+      );
+  });
 
     // Ovládanie pomocou klávesnice
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -141,6 +158,23 @@ export default class PlayScene extends Phaser.Scene {
 
       // Pridaj event na stlačenie ESC pre pauzu
       this.input.keyboard.on('keydown-ESC', () => {
+        this.scene.pause(); // Pauznutie hry
+        this.scene.launch('PauseScene'); // Spustenie PauseMenu scény
+    });
+
+    // Pause button
+    const pauseButton = this.add.image(
+        worldWidth - 30,       // Pravý horný roh
+        reservedTopSpace / 2,  // Vertikálne zarovnanie s textom skóre
+        'pauseButton'
+    ).setInteractive();
+
+    pauseButton.on('pointerdown', () => {
+        pauseButton.setTexture('pauseButtonPressed');
+    });
+
+    pauseButton.on('pointerup', () => {
+        pauseButton.setTexture('pauseButton');
         this.scene.pause(); // Pauznutie hry
         this.scene.launch('PauseScene'); // Spustenie PauseMenu scény
     });
@@ -219,7 +253,7 @@ export default class PlayScene extends Phaser.Scene {
    */
   increaseScore(points) {
     this.score += points; // Zvýšenie skóre
-    this.scoreText.setText(`Score: ${this.score}`); // Aktualizácia textu na obrazovke
+    this.scoreText.setText(`${this.score}`); // Aktualizácia textu na obrazovke
   }
 
   /*

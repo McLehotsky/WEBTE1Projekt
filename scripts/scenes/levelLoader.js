@@ -33,7 +33,7 @@ export default class LevelLoader {
 
       // Vypočítanie počiatočnej X a Y pozície na centrovanie
       const startX = (this.scene.scale.width - totalBricksWidth) / 2;
-      const startY = (this.scene.scale.height - totalBricksHeight) / 4 + 10; // Začíname 1/4 výšky obrazovky
+      const startY = (this.scene.scale.height - totalBricksHeight) / 4; // Začíname 1/4 výšky obrazovky
 
       const brickObjects = []; // Pole pre tehličky
 
