@@ -19,5 +19,9 @@
           "type": "image/png"
       }
   ],
-  "scope": "/"
+  "scope": "/",
+  "permissions": [
+    "gyroscope",
+    "accelerometer"
+]
 }
