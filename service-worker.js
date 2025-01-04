@@ -72,6 +72,7 @@ const ASSETS = [
     // Sounds
     './assets/sounds/boom3.wav',
     './assets/sounds/bounceSound.wav',
+    './assets/sounds/mixkit-mouse-click-close-1113.wav',
     // Levels JSON
     './assets/levels.json',
 ];
