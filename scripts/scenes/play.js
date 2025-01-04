@@ -147,20 +147,32 @@ export default class PlayScene extends Phaser.Scene {
     // Ovládanie pomocou klávesnice
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    //gyroscope
-    let tiltX = 0; // Lokálna hodnota tiltX
-    if ('DeviceOrientationEvent' in window) {
-        window.addEventListener('deviceorientation', event => {
-            if (event.gamma !== null) {
-                tiltX = event.gamma / 10; // Citlivosť gyroskopu
-            }
-        });
-    } else {
-        console.warn('Gyroskop nie je podporovaný.');
-    }
+    // Pridanie tlačidla na povolenie gyroskopu pre iOS
+    const permissionButton = this.add.text(
+      this.scale.width / 2,
+      this.scale.height / 2,
+      'Enable Gyroscope',
+      { fontSize: '24px', color: '#ffffff', fontFamily: 'm6x11' }
+  ).setOrigin(0.5, 0.5).setInteractive();
 
-    // Uloženie tiltX ako vlastnosti scény
-    this.tiltX = tiltX;
+  permissionButton.on('pointerdown', async () => {
+      if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+          try {
+              const permissionState = await DeviceOrientationEvent.requestPermission();
+              if (permissionState === 'granted') {
+                  this.enableGyroscope();
+                  permissionButton.destroy(); // Skryje tlačidlo po povolení
+              } else {
+                  console.warn('Gyroskopické povolenie zamietnuté.');
+              }
+          } catch (error) {
+              console.error('Chyba pri získavaní povolenia:', error);
+          }
+      } else {
+          this.enableGyroscope(); // Android alebo zariadenia, ktoré nevyžadujú povolenie
+          permissionButton.destroy();
+      }
+  });
 
 //###############SOUNDS##############//
       // Vytvorenie zvukov
@@ -205,19 +217,27 @@ export default class PlayScene extends Phaser.Scene {
 
   }
 
+  enableGyroscope() {
+    window.addEventListener('deviceorientation', event => {
+        if (event.gamma !== null) {
+            this.tiltX = event.gamma / 10; // Citlivosť
+        }
+    });
+  }
+
   update() {
     // Resetovanie rýchlosti paddle
     this.paddle.setVelocityX(0);
 //############INPUT##########//
     // Ovládanie paddle pomocou gyroskopu
-    if (this.tiltX) {
+    if (this.tiltX !== undefined) {
       this.paddle.x += this.tiltX;
       this.paddle.x = Phaser.Math.Clamp(
           this.paddle.x,
           this.paddle.width / 2,
           this.scale.width - this.paddle.width / 2
       );
-    }
+  }
     // Klávesnica - umožní prepísanie myšou
     if (this.cursors.left.isDown) {
       this.paddle.setVelocityX(-300);
