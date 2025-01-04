@@ -55,7 +55,7 @@ export default class PlayScene extends Phaser.Scene {
     this.load.audio('explosion', 'assets/sounds/boom3.wav'); // Zvuk výbuchu
 
     this.load.image('pauseButton', 'assets/images/ui/PauseButton.png');
-    this.load.image('pauseButtonPressed', 'assets/images/ui/PauseButtonpressed.png');
+    this.load.image('pauseButtonPressed', 'assets/images/ui/PauseButtonPressed.png');
 
     this.add.text(0, 0, '', { fontFamily: 'm6x11', fontSize: '16px' });
   }

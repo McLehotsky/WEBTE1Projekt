@@ -62,7 +62,7 @@ const ASSETS = [
     './assets/images/ui/HomeButtonPressed.png',
     './assets/images/ui/particle1.png',
     './assets/images/ui/PauseButton.png',
-    './assets/images/ui/PauseButtonpressed.png',
+    './assets/images/ui/PauseButtonPressed.png',
     './assets/images/ui/PlayButton.png',
     './assets/images/ui/PlayButtonpressed.png',
     './assets/images/ui/PlayButtonSmall.png',
