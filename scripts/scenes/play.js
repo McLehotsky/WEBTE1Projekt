@@ -147,6 +147,21 @@ export default class PlayScene extends Phaser.Scene {
     // Ovládanie pomocou klávesnice
     this.cursors = this.input.keyboard.createCursorKeys();
 
+    //gyroscope
+    let tiltX = 0; // Lokálna hodnota tiltX
+    if ('DeviceOrientationEvent' in window) {
+        window.addEventListener('deviceorientation', event => {
+            if (event.gamma !== null) {
+                tiltX = event.gamma / 10; // Citlivosť gyroskopu
+            }
+        });
+    } else {
+        console.warn('Gyroskop nie je podporovaný.');
+    }
+
+    // Uloženie tiltX ako vlastnosti scény
+    this.tiltX = tiltX;
+
 //###############SOUNDS##############//
       // Vytvorenie zvukov
     this.bounceSound = this.sound.add('bounce');
@@ -194,6 +209,15 @@ export default class PlayScene extends Phaser.Scene {
     // Resetovanie rýchlosti paddle
     this.paddle.setVelocityX(0);
 //############INPUT##########//
+    // Ovládanie paddle pomocou gyroskopu
+    if (this.tiltX) {
+      this.paddle.x += this.tiltX;
+      this.paddle.x = Phaser.Math.Clamp(
+          this.paddle.x,
+          this.paddle.width / 2,
+          this.scale.width - this.paddle.width / 2
+      );
+    }
     // Klávesnica - umožní prepísanie myšou
     if (this.cursors.left.isDown) {
       this.paddle.setVelocityX(-300);
