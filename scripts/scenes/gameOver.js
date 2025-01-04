@@ -6,6 +6,7 @@ export default class GameScene extends Phaser.Scene {
     preload() {
       this.load.image('playButton', 'assets/images/ui/PlayButton.png');
       this.load.image('playButtonPressed', 'assets/images/ui/PlayButtonpressed.png');
+      this.add.text(0, 0, '', { fontFamily: 'm6x11', fontSize: '16px' });
     }
   
     create() {
@@ -15,6 +16,7 @@ export default class GameScene extends Phaser.Scene {
       this.add.text(width / 2, height / 2 - 50, 'GameOver!', {
         fontSize: '32px',
         fill: '#fff',
+        fontFamily: 'm6x11',
       }).setOrigin(0.5); // Nastavenie stredu textu ako referenčného bodu
   
       // Pridanie tlačidla na stred obrazovky pod text
@@ -33,6 +35,12 @@ export default class GameScene extends Phaser.Scene {
   
       playButton.on('pointerout', () => {
         playButton.setTexture('playButton'); // Zmena späť na normálny sprite, ak ukazovateľ opustí tlačidlo
+      });
+
+      this.children.list.forEach((child) => {
+        if (child instanceof Phaser.GameObjects.Sprite) {
+            child.setScale(1.5); // Zväčšenie spriteov
+        }
       });
     }
   }

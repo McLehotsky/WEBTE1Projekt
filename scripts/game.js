@@ -6,7 +6,7 @@ export default class GameScene extends Phaser.Scene {
   preload() {
     this.load.image('playButton', 'assets/images/ui/PlayButton.png');
     this.load.image('playButtonPressed', 'assets/images/ui/PlayButtonpressed.png');
-    this.add.text(0, 0, 'Loading...', { fontFamily: 'm6x11', fontSize: '16px' });
+    this.add.text(0, 0, '', { fontFamily: 'm6x11', fontSize: '16px' });
   }
 
   create() {
@@ -35,6 +35,12 @@ export default class GameScene extends Phaser.Scene {
 
     playButton.on('pointerout', () => {
       playButton.setTexture('playButton'); // Zmena späť na normálny sprite, ak ukazovateľ opustí tlačidlo
+    });
+
+    this.children.list.forEach((child) => {
+      if (child instanceof Phaser.GameObjects.Sprite) {
+          child.setScale(1.5); // Zväčšenie spriteov
+      }
     });
   }
 }

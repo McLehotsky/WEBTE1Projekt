@@ -27,32 +27,45 @@ export default class LevelLoader {
     createBricks(levelData) {
       const { bricks, brickWidth, brickHeight, rows, columns } = levelData;
   
-      // Vypočítanie celkovej šírky a výšky tehličiek
-      const totalBricksWidth = columns * brickWidth;
-      const totalBricksHeight = rows * brickHeight;
-
-      // Vypočítanie počiatočnej X a Y pozície na centrovanie
-      const startX = (this.scene.scale.width - totalBricksWidth) / 2;
-      const startY = (this.scene.scale.height - totalBricksHeight) / 4; // Začíname 1/4 výšky obrazovky
-
-      const brickObjects = []; // Pole pre tehličky
-
-      bricks.forEach(brick => {
-        const x = startX + brick.column * (brickWidth + 7); // Horizontálny rozostup +10 px
-        const y = startY + brick.row * (brickHeight + 2); // Vertikálny rozostup +5 px
-
-        // console.log(`Vytváram tehličku na (${x}, ${y}) so sprite: ${brick.sprite}`);
-        
-        // Pridanie tehličky do scény
-        const newBrick = this.scene.physics.add.sprite(x, y, brick.sprite);
-        newBrick.setTexture(brick.sprite); // Nastavenie správneho sprite
-        newBrick.setOrigin(0.5); // Zarovnanie stredu
-        newBrick.setImmovable(true); // Tehličky sa nepohybujú
-        newBrick.lives = brick.lives; // Nastavenie životov tehličky
+      const scale = 1.5; // Faktor mierky
   
-        brickObjects.push(newBrick);
+      // Dynamické rozmery
+      const scaledBrickWidth = brickWidth * scale; // Šírka tehličky po mierke
+      const scaledBrickHeight = brickHeight * scale; // Výška tehličky po mierke
+      const horizontalSpacing = 2; // Pevná medzera medzi stĺpcami
+      const verticalSpacing = 2; // Pevná medzera medzi riadkami
+  
+      // Šírka jedného stĺpca (tehlička + medzera)
+      const columnWidth = scaledBrickWidth + horizontalSpacing;
+  
+      // Celková šírka všetkých stĺpcov
+      const totalBricksWidth = 6 * columnWidth - horizontalSpacing;
+  
+      // Počiatočné X a Y pozície
+      const startX = (360 - totalBricksWidth) / 2; // 360 = šírka logickej oblasti
+      const startY = 92; // Pevný posun zhora
+  
+      const brickObjects = [];
+  
+      bricks.forEach(brick => {
+          const x = startX + brick.column * columnWidth;
+          const y = startY + brick.row * (scaledBrickHeight + verticalSpacing);
+  
+          // Pridanie tehličky
+          const newBrick = this.scene.physics.add.sprite(x, y, brick.sprite);
+          newBrick.setTexture(brick.sprite);
+          newBrick.setOrigin(0.5);
+          newBrick.setImmovable(true);
+          newBrick.setDisplaySize(scaledBrickWidth, scaledBrickHeight);
+          newBrick.lives = brick.lives;
+  
+          brickObjects.push(newBrick);
       });
-      return brickObjects; // Vrátenie tehličiek
-    }
+  
+      return brickObjects;
+  }
+  
+  
+  
   }
   

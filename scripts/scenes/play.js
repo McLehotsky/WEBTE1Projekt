@@ -56,6 +56,8 @@ export default class PlayScene extends Phaser.Scene {
 
     this.load.image('pauseButton', 'assets/images/ui/PauseButton.png');
     this.load.image('pauseButtonPressed', 'assets/images/ui/PauseButtonpressed.png');
+
+    this.add.text(0, 0, '', { fontFamily: 'm6x11', fontSize: '16px' });
   }
 
   create() {
@@ -72,6 +74,13 @@ export default class PlayScene extends Phaser.Scene {
         worldHeight - reservedTopSpace // Výška sveta bez rezervovanej oblasti
     );
 
+    // Transparentný panel
+const graphics = this.add.graphics();
+graphics.fillStyle(0x000000, 0.5);
+graphics.fillRect(0, 0, worldWidth, reservedTopSpace);
+graphics.setDepth(0); // Nastavenie hĺbky na spodnú vrstvu
+
+
     // Nastavenie kamery (ak používaš kameru)
     this.cameras.main.setBounds(0, 0, worldWidth, worldHeight);
 
@@ -84,14 +93,14 @@ export default class PlayScene extends Phaser.Scene {
 
 //###############PARRTICLES##################//
     // Vytvorenie particlového systému s konfiguráciou
-    this.particleEmitter = this.add.particles(this.scale.width / 2, this.scale.height / 2, 'particle', {
-      lifespan: 1000,                  // Trvanie častíc
-      speed: { min: -50, max: 50 },  // Rýchlosť častíc
-      scale: { start: 1, end: 0 },     // Postupné zmenšovanie častíc
-      tint: [0xffffff, 0xd3d3d3, 0x808080],
-      blendMode: 'NORMAL',             // Normálny režim miešania
-      quantity: 0,                    // Počet častíc
-    });
+    // this.particleEmitter = this.add.particles(this.scale.width / 2, this.scale.height / 2, 'particle', {
+    //   lifespan: 1000,                  // Trvanie častíc
+    //   speed: { min: -50, max: 50 },  // Rýchlosť častíc
+    //   scale: { start: 2, end: 0 },     // Postupné zmenšovanie častíc
+    //   tint: [0xffffff, 0xd3d3d3, 0x808080],
+    //   blendMode: 'NORMAL',             // Normálny režim miešania
+    //   quantity: 0,                    // Počet častíc
+    // });
     
 
 //###############LOPTA##########################//
@@ -114,7 +123,7 @@ export default class PlayScene extends Phaser.Scene {
     // Pridanie paddle na spodok obrazovky
     this.paddle = this.physics.add.sprite(
       this.scale.width / 2,  // X pozícia (stred obrazovky)
-      this.scale.height - 80, // Y pozícia (20px nad spodkom)
+      this.scale.height - 50, // Y pozícia (20px nad spodkom)
       'paddle'
     );
     // Zabránenie padaniu paddle
@@ -128,12 +137,12 @@ export default class PlayScene extends Phaser.Scene {
     this.score = 0; // Inicializácia skóre
     this.scoreText = this.add.text(
       this.scale.width / 2, // Stred obrazovky
-      20,                  // Vzdialenosť od vrchu
+      25,                  // Vzdialenosť od vrchu
       `${this.score}`,      // Zobrazované skóre
       {
           fontSize: '24px',
           color: '#ffffff',
-          fontFamily: 'Arial',
+          fontFamily: 'm6x11',
       }
   ).setOrigin(0.5, 0.5); // Nastaví stred textu ako bod ukotvenia
 
@@ -181,6 +190,14 @@ export default class PlayScene extends Phaser.Scene {
         this.scene.pause(); // Pauznutie hry
         this.scene.launch('PauseScene'); // Spustenie PauseMenu scény
     });
+
+    this.children.list.forEach((child) => {
+      if (child instanceof Phaser.GameObjects.Sprite) {
+          child.setScale(1.5); // Zväčšenie spriteov
+      }
+    });
+
+    this.ballSpeed = 300; // Požadovaná konštantná rýchlosť lopty
 
   }
 
@@ -250,6 +267,7 @@ export default class PlayScene extends Phaser.Scene {
 
     // Nastav fyziku pre tehličky
     this.tiles.forEach(tile => {
+      tile.setScale(1.5);
       this.physics.add.collider(this.ball, tile, this.handleBallTileCollision, null, this);
     });
 
@@ -310,6 +328,15 @@ export default class PlayScene extends Phaser.Scene {
       // Prepočet pozície dlaždice do svetových súradníc
       const worldPoint = tile.getWorldTransformMatrix().transformPoint(0, 0);
 
+      this.particleEmitter = this.add.particles(this.scale.width / 2, this.scale.height / 2, 'particle', {
+        lifespan: 800,                  // Trvanie častíc
+        speed: { min: -80, max: 80 },  // Rýchlosť častíc
+        scale: { start: 2, end: 0 },     // Postupné zmenšovanie častíc
+        tint: [0xffffff, 0xd3d3d3, 0x808080],
+        blendMode: 'NORMAL',             // Normálny režim miešania
+        quantity: 0,                    // Počet častíc
+      });
+
       // Spustenie particlového efektu na správnom mieste
       this.particleEmitter.setPosition(worldPoint.x, worldPoint.y);
       this.particleEmitter.explode(20);
@@ -325,7 +352,6 @@ export default class PlayScene extends Phaser.Scene {
   FUNKCIA NA KONSTANTNU BALL SPEED
    */
   ensureConstantBallSpeed() {
-    const ballSpeed = 200; // Požadovaná konštantná rýchlosť lopty
     const velocityX = this.ball.body.velocity.x;
     const velocityY = this.ball.body.velocity.y;
   
@@ -333,8 +359,8 @@ export default class PlayScene extends Phaser.Scene {
     const currentSpeed = Math.sqrt(velocityX * velocityX + velocityY * velocityY);
   
     // Ak sa aktuálna rýchlosť líši od požadovanej, upravíme ju
-    if (currentSpeed !== ballSpeed) {
-      const scale = ballSpeed / currentSpeed;
+    if (currentSpeed !== this.ballSpeed) {
+      const scale = this.ballSpeed / currentSpeed;
   
       // Nastavenie novej rýchlosti
       this.ball.setVelocity(velocityX * scale, velocityY * scale);
@@ -359,6 +385,7 @@ export default class PlayScene extends Phaser.Scene {
   
       // Ak chceš načítať ďalší level:
       this.loadNextLevel();
+      this.ballSpeed += 30;
   
       // Ak chceš ukončiť hru:
       // this.endGame();
