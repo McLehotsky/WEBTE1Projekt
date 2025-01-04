@@ -53,6 +53,7 @@ export default class PlayScene extends Phaser.Scene {
     // Načítanie zvukových efektov
     this.load.audio('bounce', 'assets/sounds/bounceSound.wav'); // Zvuk odrazu
     this.load.audio('explosion', 'assets/sounds/boom3.wav'); // Zvuk výbuchu
+    this.load.audio('click', 'assets/sounds/mixkit-mouse-click-close-1113.wav');
 
     this.load.image('pauseButton', 'assets/images/ui/PauseButton.png');
     this.load.image('pauseButtonPressed', 'assets/images/ui/PauseButtonPressed.png');
@@ -75,11 +76,10 @@ export default class PlayScene extends Phaser.Scene {
     );
 
     // Transparentný panel
-const graphics = this.add.graphics();
-graphics.fillStyle(0x000000, 0.5);
-graphics.fillRect(0, 0, worldWidth, reservedTopSpace);
-graphics.setDepth(0); // Nastavenie hĺbky na spodnú vrstvu
-
+    const graphics = this.add.graphics();
+    graphics.fillStyle(0x000000, 0.5);
+    graphics.fillRect(0, 0, worldWidth, reservedTopSpace);
+    graphics.setDepth(0); // Nastavenie hĺbky na spodnú vrstvu
 
     // Nastavenie kamery (ak používaš kameru)
     this.cameras.main.setBounds(0, 0, worldWidth, worldHeight);
@@ -89,19 +89,6 @@ graphics.setDepth(0); // Nastavenie hĺbky na spodnú vrstvu
 
     // Zavolanie funkcie na načítanie prvého náhodného levelu
     this.loadRandomFirstLevel();
-
-
-//###############PARRTICLES##################//
-    // Vytvorenie particlového systému s konfiguráciou
-    // this.particleEmitter = this.add.particles(this.scale.width / 2, this.scale.height / 2, 'particle', {
-    //   lifespan: 1000,                  // Trvanie častíc
-    //   speed: { min: -50, max: 50 },  // Rýchlosť častíc
-    //   scale: { start: 2, end: 0 },     // Postupné zmenšovanie častíc
-    //   tint: [0xffffff, 0xd3d3d3, 0x808080],
-    //   blendMode: 'NORMAL',             // Normálny režim miešania
-    //   quantity: 0,                    // Počet častíc
-    // });
-    
 
 //###############LOPTA##########################//
     // Pridanie lopty
@@ -164,6 +151,7 @@ graphics.setDepth(0); // Nastavenie hĺbky na spodnú vrstvu
       // Vytvorenie zvukov
     this.bounceSound = this.sound.add('bounce');
     this.explosionSound = this.sound.add('explosion');
+    this.clickSound = this.sound.add('click');
 
     this.PlayerLives = 3;
 
@@ -186,6 +174,7 @@ graphics.setDepth(0); // Nastavenie hĺbky na spodnú vrstvu
     });
 
     pauseButton.on('pointerup', () => {
+      this.clickSound.play();
         pauseButton.setTexture('pauseButton');
         this.scene.pause(); // Pauznutie hry
         this.scene.launch('PauseScene'); // Spustenie PauseMenu scény

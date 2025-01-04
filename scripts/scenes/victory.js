@@ -4,9 +4,12 @@ export default class GameScene extends Phaser.Scene {
     }
   
     preload() {
-      this.load.image('playButton', 'assets/images/ui/PlayButton.png');
-      this.load.image('playButtonPressed', 'assets/images/ui/PlayButtonpressed.png');
+      this.load.image('homeButton', 'assets/images/ui/HomeButton.png');
+      this.load.image('homeButtonPressed', 'assets/images/ui/HomeButtonPressed.png');
+
       this.add.text(0, 0, '', { fontFamily: 'm6x11', fontSize: '16px' });
+
+      this.load.audio('click', 'assets/sounds/mixkit-mouse-click-close-1113.wav');
     }
   
     create() {
@@ -14,27 +17,36 @@ export default class GameScene extends Phaser.Scene {
   
       // Pridanie textu na stred obrazovky
       this.add.text(width / 2, height / 2 - 50, 'Victory!', {
-        fontSize: '32px',
+        fontSize: '48px',
         fill: '#fff',
         fontFamily: 'm6x11',
       }).setOrigin(0.5); // Nastavenie stredu textu ako referenčného bodu
   
-      // Pridanie tlačidla na stred obrazovky pod text
-      const playButton = this.add.sprite(width / 2, height / 2 + 20, 'playButton').setInteractive();
-      playButton.setOrigin(0.5); // Nastavenie stredu tlačidla ako referenčného bodu
-  
+      this.clickSound = this.sound.add('click');
+
+      // Pridanie tlačidla na vrátenie sa na začiatočnú obrazovku
+      const homeButton = this.add.sprite(width / 2, height / 2 + 80, 'homeButton').setInteractive();
+      homeButton.setOrigin(0.5); // Nastavenie stredu tlačidla ako referenčného bodu
+      
       // Spracovanie udalostí pre tlačidlo
-      playButton.on('pointerdown', () => {
-        playButton.setTexture('playButtonPressed'); // Zmena na stlačený sprite
+      homeButton.on('pointerdown', () => {
+        homeButton.setTexture('homeButtonPressed'); // Zmena na stlačený sprite
       });
-  
-      playButton.on('pointerup', () => {
-        playButton.setTexture('playButton'); // Zmena späť na normálny sprite
-        this.scene.start('GameScene'); // Prepnutie na PlayScene pri uvoľnení tlačidla
+      
+      homeButton.on('pointerup', () => {
+        this.clickSound.play();
+        homeButton.setTexture('homeButton'); // Zmena späť na normálny sprite
+        this.scene.start('GameScene'); // Prepnutie na GameScene pri uvoľnení tlačidla
       });
-  
-      playButton.on('pointerout', () => {
-        playButton.setTexture('playButton'); // Zmena späť na normálny sprite, ak ukazovateľ opustí tlačidlo
+      
+      homeButton.on('pointerout', () => {
+        homeButton.setTexture('homeButton'); // Zmena späť na normálny sprite, ak ukazovateľ opustí tlačidlo
+      });
+
+      this.children.list.forEach((child) => {
+        if (child instanceof Phaser.GameObjects.Sprite) {
+            child.setScale(1.5); // Zväčšenie spriteov
+        }
       });
     }
   }
