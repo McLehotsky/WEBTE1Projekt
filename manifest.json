@@ -2,7 +2,7 @@
   "name": "EL-Smasher",
   "short_name": "EL-Smasher",
   "description": "A classic breakout-style game designed for mobile devices.",
-  "start_url": "/index.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "theme_color": "#2a9d8f",
   "background_color": "#dde364",
