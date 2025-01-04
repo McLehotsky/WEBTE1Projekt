@@ -147,32 +147,56 @@ export default class PlayScene extends Phaser.Scene {
     // Ovládanie pomocou klávesnice
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    // Pridanie tlačidla na povolenie gyroskopu pre iOS
-    const permissionButton = this.add.text(
-      this.scale.width / 2,
-      this.scale.height / 2,
-      'Enable Gyroscope',
-      { fontSize: '24px', color: '#ffffff', fontFamily: 'm6x11' }
-  ).setOrigin(0.5, 0.5).setInteractive();
+// Detekcia iOS zariadenia
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    
+if (isIOS) {
+    // HTML tlačidlo pre gyroskop len na iOS
+    const htmlButton = document.createElement('button');
+    htmlButton.innerText = 'Enable Gyroscope';
+    htmlButton.style.position = 'absolute';
+    htmlButton.style.top = '50%';
+    htmlButton.style.left = '50%';
+    htmlButton.style.transform = 'translate(-50%, -50%)';
+    htmlButton.style.padding = '10px 20px';
+    htmlButton.style.fontSize = '18px';
+    htmlButton.style.backgroundColor = '#007bff';
+    htmlButton.style.color = '#fff';
+    htmlButton.style.border = 'none';
+    htmlButton.style.borderRadius = '5px';
+    htmlButton.style.cursor = 'pointer';
 
-  permissionButton.on('pointerdown', async () => {
-      if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-          try {
-              const permissionState = await DeviceOrientationEvent.requestPermission();
-              if (permissionState === 'granted') {
-                  this.enableGyroscope();
-                  permissionButton.destroy(); // Skryje tlačidlo po povolení
-              } else {
-                  console.warn('Gyroskopické povolenie zamietnuté.');
-              }
-          } catch (error) {
-              console.error('Chyba pri získavaní povolenia:', error);
-          }
-      } else {
-          this.enableGyroscope(); // Android alebo zariadenia, ktoré nevyžadujú povolenie
-          permissionButton.destroy();
-      }
-  });
+    document.body.appendChild(htmlButton);
+
+    htmlButton.addEventListener('click', async () => {
+        console.log('HTML tlačidlo bolo stlačené');
+        if (typeof DeviceOrientationEvent !== 'undefined' && 
+            typeof DeviceOrientationEvent.requestPermission === 'function') {
+            try {
+                const permission = await DeviceOrientationEvent.requestPermission();
+                if (permission === 'granted') {
+                    console.log('Gyroskop povolený!');
+                    this.enableGyroscope();
+                    htmlButton.style.display = 'none'; // Skrytie tlačidla po povolení
+                } else {
+                    console.warn('Gyroskop povolenie zamietnuté.');
+                }
+            } catch (error) {
+                console.error('Chyba pri žiadosti o povolenie:', error);
+            }
+        } else {
+            console.log('Gyroskop povolenie nie je potrebné.');
+            this.enableGyroscope();
+            htmlButton.style.display = 'none'; // Skrytie tlačidla
+        }
+    });
+} else {
+    // Pre ostatné zariadenia (Android) povolíme gyroskop automaticky
+    this.enableGyroscope();
+}
+
+// Inicializácia gyroskopickej hodnoty
+this.tiltX = 0;
 
 //###############SOUNDS##############//
       // Vytvorenie zvukov
