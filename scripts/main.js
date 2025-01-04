@@ -23,7 +23,7 @@ const config = {
     },
   },
   scene: [GameScene, PlayScene, GameOverScene, GameVictoryScene, PauseScene], // Zoznam scén
-  backgroundColor: '#dde364' // Nastavenie čierneho pozadia
+  backgroundColor: '#022D36' // Nastavenie čierneho pozadia
 };
 
 const game = new Phaser.Game(config);

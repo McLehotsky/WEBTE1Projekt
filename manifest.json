@@ -1,6 +1,6 @@
 {
-    "name": "LL-Breaker",
-    "short_name": "LL-Breaker",
+    "name": "EL-Smasher",
+    "short_name": "EL-Smasher",
     "description": "A classic breakout-style game designed for mobile devices.",
     "start_url": "./index.html",
     "display": "standalone",
