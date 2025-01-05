@@ -23,7 +23,7 @@ const config = {
       debug: false,
     },
   },
-  scene: [PlayScene], // Zoznam scén
+  scene: [GameScene, PlayScene, GameOverScene, GameVictoryScene, PauseScene, HowToPlayScene], // Zoznam scén
   backgroundColor: '#022D36' // Nastavenie čierneho pozadia
 };
 
