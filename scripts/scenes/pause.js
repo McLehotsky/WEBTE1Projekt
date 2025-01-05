@@ -28,12 +28,12 @@ export default class PauseMenu extends Phaser.Scene {
         this.add.rectangle(centerX, centerY, this.scale.width, this.scale.height, 0x000000, 0.5); // Čierne pozadie s 50% priehľadnosťou
 
         // Text "PAUSED"
-        this.add.text(centerX, centerY - 100, 'PAUSED', { fontSize: '48px', fill: '#ffffff', fontFamily: 'm6x11' }).setOrigin(0.5);
+        this.add.text(centerX, centerY - 100, 'PAUSED', { fontSize: '60px', fill: '#ffffff', fontFamily: 'm6x11' }).setOrigin(0.5);
 
         this.clickSound = this.sound.add('click');
 
         // Pridanie tlačidla na stred obrazovky pod text
-        const resumeButton = this.add.sprite(width / 2 - 50, height / 2 + 20, 'playButtonSmall').setInteractive();
+        const resumeButton = this.add.sprite(width / 2 - 80, height / 2 + 20, 'playButtonSmall').setInteractive();
         resumeButton.setOrigin(0.5); // Nastavenie stredu tlačidla ako referenčného bodu
 
         // Spracovanie udalostí pre tlačidlo
@@ -74,7 +74,7 @@ export default class PauseMenu extends Phaser.Scene {
         });
 
         // Tlačidlo Main Menu
-        const homeButton = this.add.sprite(width / 2 + 50, height / 2 + 20, 'homeButton').setInteractive();
+        const homeButton = this.add.sprite(width / 2 + 80, height / 2 + 20, 'homeButton').setInteractive();
         homeButton.setOrigin(0.5); // Nastavenie stredu tlačidla ako referenčného bodu
       
         // Spracovanie udalostí pre tlačidlo
@@ -95,7 +95,7 @@ export default class PauseMenu extends Phaser.Scene {
 
         this.children.list.forEach((child) => {
             if (child instanceof Phaser.GameObjects.Sprite) {
-                child.setScale(1.5); // Zväčšenie spriteov
+                child.setScale(2); // Zväčšenie spriteov
             }
         });
     }

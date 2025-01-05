@@ -12,12 +12,26 @@ export default class GameScene extends Phaser.Scene {
       this.load.audio('click', 'assets/sounds/mixkit-mouse-click-close-1113.wav');
     }
   
-    create() {
+    create(data) {
       const { width, height } = this.scale; // Získanie šírky a výšky scény
   
       // Pridanie textu na stred obrazovky
-      this.add.text(width / 2, height / 2 - 60, 'GameOver!', {
-        fontSize: '48px',
+      this.add.text(width / 2, height / 2 - 100, 'GameOver!', {
+        fontSize: '60px',
+        fill: '#fff',
+        fontFamily: 'm6x11',
+      }).setOrigin(0.5); // Nastavenie stredu textu ako referenčného bodu
+
+      this.add.text(width / 2, height / 2 - 35, 'Score:', {
+        fontSize: '32px',
+        fill: '#fff',
+        fontFamily: 'm6x11',
+      }).setOrigin(0.5); // Nastavenie stredu textu ako referenčného bodu
+
+      const score = data.currentScore; // Použi 0 ako predvolenú hodnotu, ak `data.score` neexistuje
+
+      this.add.text(width / 2, height / 2, `${score}`, {
+        fontSize: '32px',
         fill: '#fff',
         fontFamily: 'm6x11',
       }).setOrigin(0.5); // Nastavenie stredu textu ako referenčného bodu
@@ -45,7 +59,7 @@ export default class GameScene extends Phaser.Scene {
 
       this.children.list.forEach((child) => {
         if (child instanceof Phaser.GameObjects.Sprite) {
-            child.setScale(1.5); // Zväčšenie spriteov
+            child.setScale(2); // Zväčšenie spriteov
         }
       });
     }

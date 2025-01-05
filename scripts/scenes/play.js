@@ -256,6 +256,7 @@ this.tiltX = 0;
   update() {
     // Resetovanie rýchlosti paddle
     this.paddle.setVelocityX(0);
+    
 //############INPUT##########//
     // Ovládanie paddle pomocou gyroskopu
     if (this.tiltX !== undefined) {
@@ -274,6 +275,7 @@ this.tiltX = 0;
     } else {
       this.paddle.setVelocityX(0); // Zastavenie, ak sa klávesy nepoužívajú
     }
+
 //########BALL########//
     // Kontrola, či lopta spadla
     if (this.ball.y > this.scale.height) {
@@ -471,7 +473,7 @@ this.tiltX = 0;
 
     if (remainingLevels.length === 0) {
       console.log('Žiadne ďalšie levely, ukončenie hry.');
-      // this.endGame();
+      this.endGame();
       return;
     }
 
@@ -489,11 +491,18 @@ this.tiltX = 0;
 
 
   /*
-  FUNKCIA NA KONIEC HRY
+  FUNKCIA NA KONIEC HRY - PREHRA
    */
   GameOver() {
-    console.log('Hra skončila!');
-    this.scene.start('GameOverScene'); // Prepnutie na scénu Game Over (ak existuje)
+    this.scene.start('GameOverScene', {currentScore: this.score}); // Prepnutie na scénu Game Over (ak existuje)
+    this.scene.stop();
+  }
+
+  /*
+  FUNKCIA NA KONIEC HRY - VYHRA
+   */
+  endGame() {
+    this.scene.start('GameVictoryScene', {currentScore: this.score}); // Prepnutie na scénu Victory (ak existuje)
     this.scene.stop();
   }
 }
