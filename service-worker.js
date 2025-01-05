@@ -1,4 +1,4 @@
-const CACHE_NAME = 'breakout-game-cache-v1.1';
+const CACHE_NAME = 'el-smasher-cache-v1.0';
 const ASSETS = [
     './', // Root
     './index.html',
@@ -69,10 +69,18 @@ const ASSETS = [
     './assets/images/ui/PlayButtonSmallPressed.png',
     './assets/images/ui/RestartButton.png',
     './assets/images/ui/RestartButtonPressed.png',
+    './assets/images/ui/ContinueButton.png',
+    './assets/images/ui/ContinueButtonPressed.png',
+    './assets/images/ui/BackButton.png',
+    './assets/images/ui/BackButtonPressed.png',
+    './assets/images/ui/HowToPlay.png',
+    './assets/images/ui/HowToPlayPressed.png',
+    './assets/images/ui/ExtraLife.png',
     // Sounds
     './assets/sounds/boom3.wav',
     './assets/sounds/bounceSound.wav',
     './assets/sounds/mixkit-mouse-click-close-1113.wav',
+    './assets/sounds/collectSound.wav',
     // Levels JSON
     './assets/levels.json',
 ];
