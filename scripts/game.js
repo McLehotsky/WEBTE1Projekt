@@ -55,6 +55,7 @@ export default class GameScene extends Phaser.Scene {
     howToPlay.on('pointerup', () => {
       this.clickSound.play();
       howToPlay.setTexture('howToPlay'); // Zmena späť na normálny sprite
+      this.scene.start('HowToPlayScene');
     });
 
     howToPlay.on('pointerout', () => {
