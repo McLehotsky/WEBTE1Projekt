@@ -67,6 +67,17 @@ export default class PlayScene extends Phaser.Scene {
 
   create() {
 
+    this.levelLoader = new LevelLoader(this);
+    this.loadGameState(); // Načíta uložený stav hry
+
+    if (this.currentLevel) {
+      // Ak je uložený aktuálny level, načítaj ho
+      this.loadLevel(this.currentLevel);
+    } else {
+      // Ak nie je aktuálny level, načítaj náhodný prvý level
+      this.loadRandomFirstLevel();
+    }
+
     const reservedTopSpace = 50; // Rezervovaná oblasť na skóre a pauzu
     const worldWidth = 360; // Logická šírka herného sveta
     const worldHeight = 640; // Logická výška herného sveta
@@ -89,10 +100,9 @@ export default class PlayScene extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, worldWidth, worldHeight);
 
     // Inicializácia zoznamu odohraných levelov
-    this.playedLevels = new Set();
-
-    // Zavolanie funkcie na načítanie prvého náhodného levelu
-    this.loadRandomFirstLevel();
+    if (!this.playedLevels) {
+      this.playedLevels = new Set();
+    }
 
   //###############LOPTA##########################//
     // Pridanie lopty
@@ -129,7 +139,6 @@ export default class PlayScene extends Phaser.Scene {
 
   //###################SCORE###################//
     // Skórovací systém
-    this.score = 0; // Inicializácia skóre
     this.scoreText = this.add.text(
       this.scale.width / 2, // Stred obrazovky
       25,                  // Vzdialenosť od vrchu
@@ -166,7 +175,10 @@ export default class PlayScene extends Phaser.Scene {
     );
 
 
-  //###############CONTROLS##############//
+
+  this.scoreText.setText(`${this.score}`); // Obnov skóre na obrazovke
+//###############CONTROLS##############//
+
     // Ovládanie paddle myšou
     this.input.on('pointermove', pointer => {
       this.paddle.x = Phaser.Math.Clamp(
@@ -228,7 +240,6 @@ export default class PlayScene extends Phaser.Scene {
       // Pre ostatné zariadenia (Android) povolíme gyroskop automaticky
       this.enableGyroscope();
     }
-
     // Inicializácia gyroskopickej hodnoty
     this.tiltX = 0;
 
@@ -268,8 +279,6 @@ export default class PlayScene extends Phaser.Scene {
         child.setScale(1.5); // Zväčšenie spriteov
       }
     });
-
-    this.ballSpeed = 300; // Požadovaná konštantná rýchlosť lopty
   }
 
   enableGyroscope() {
@@ -340,8 +349,6 @@ export default class PlayScene extends Phaser.Scene {
 
     console.log(`Načítavam prvý náhodný level ${this.currentLevel}...`);
 
-    // Načítanie prvého levelu
-    this.levelLoader = new LevelLoader(this);
     this.loadLevel(this.currentLevel); // Nie je potrebné await, ak sa používa v ne-async funkcii
   }
 
@@ -365,7 +372,6 @@ export default class PlayScene extends Phaser.Scene {
       this.physics.add.collider(this.ball, tile, this.handleBallTileCollision, null, this);
     });
 
-    this.currentLevel = levelNumber;
   }
 
   /*
@@ -453,12 +459,14 @@ export default class PlayScene extends Phaser.Scene {
   ensureConstantBallSpeed() {
     const velocityX = this.ball.body.velocity.x;
     const velocityY = this.ball.body.velocity.y;
+    const maxSpeed = 450;
   
     // Vypočíta aktuálnu rýchlosť (veľkosť vektora)
     const currentSpeed = Math.sqrt(velocityX * velocityX + velocityY * velocityY);
   
-    // Ak sa aktuálna rýchlosť líši od požadovanej, upravíme ju
+    // Ak sa aktuálna rýchlosť líši od požadovanej, upravíme ju 
     if (currentSpeed !== this.ballSpeed) {
+
       const scale = this.ballSpeed / currentSpeed;
   
       // Nastavenie novej rýchlosti
@@ -495,22 +503,42 @@ export default class PlayScene extends Phaser.Scene {
   FUNKCIA NA NACITANIE NOVEHO LEVELU
   */
   async loadNextLevel() {
-    // Ak ešte nemáš, inicializuj zoznam odohraných levelov
+    // Inicializuj `playedLevels`, ak ešte neexistuje
     if (!this.playedLevels) {
       this.playedLevels = new Set();
     }
+  
+    try {
+      // Načíta údaje z JSON súboru
+      const response = await fetch('assets/levels.json');
+      const data = await response.json();
+  
+      // Filtruj levely, ktoré ešte neboli odohrané
+      const remainingLevels = data.levels.filter(level => !this.playedLevels.has(level.level));
+  
+      if (remainingLevels.length === 0) {
+        console.log('Žiadne ďalšie levely, ukončenie hry.');
+        this.endGame();
+        return;
+      }
+  
+      // Vyber náhodný level z dostupných
+      const randomIndex = Math.floor(Math.random() * remainingLevels.length);
+      const nextLevel = remainingLevels[randomIndex].level;
+  
+      // Pridaj level do zoznamu odohraných
+      this.playedLevels.add(nextLevel);
+  
+      // Ulož stav hry s aktualizovaným `playedLevels`
+      this.currentLevel = nextLevel;
 
-    // Načíta údaje z JSON súboru
-    const response = await fetch('assets/levels.json');
-    const data = await response.json();
-
-    // Filtruj levely, ktoré ešte neboli odohrané
-    const remainingLevels = data.levels.filter(level => !this.playedLevels.has(level.level));
-
-    if (remainingLevels.length === 0) {
-      console.log('Žiadne ďalšie levely, ukončenie hry.');
-      this.endGame();
-      return;
+      this.saveGameState();
+  
+      console.log(`Načítavam náhodný level ${nextLevel}...`);
+      await this.loadLevel(nextLevel); // Načíta nový level
+      this.resetBall(); // Reset pozície lopty
+    } catch (error) {
+      console.error('Chyba pri načítaní ďalšieho levelu:', error);
     }
 
     // Vyber náhodný level z dostupných
@@ -535,6 +563,7 @@ export default class PlayScene extends Phaser.Scene {
     powerUp.setTint(0x9e1c2c);
 
     this.physics.add.collider(this.paddle, powerUp, this.collectPowerUp, null, this); // Kolízia s paddle
+
   }
 
   /*
@@ -567,4 +596,57 @@ export default class PlayScene extends Phaser.Scene {
     this.scene.start('GameVictoryScene', {currentScore: this.score}); // Prepnutie na scénu Victory (ak existuje)
     this.scene.stop();
   }
+
+  saveGameState() {
+    try {
+      const gameState = {
+        score: this.score,
+        PlayerLives: this.PlayerLives,
+        playedLevels: Array.from(this.playedLevels || []),
+        currentLevel: this.currentLevel,
+        ballSpeed: this.ballSpeed,
+      };
+      localStorage.setItem('gameState', JSON.stringify(gameState));
+      console.log('Stav hry uložený:', gameState);
+    } catch (error) {
+      console.error('Chyba pri ukladaní stavu hry:', error);
+    }
+  }
+
+  loadGameState() {
+    try {
+      const savedState = localStorage.getItem('gameState');
+      if (savedState) {
+        const gameState = JSON.parse(savedState);
+        this.score = gameState.score || 0;
+        this.PlayerLives = gameState.PlayerLives || 3;
+        this.playedLevels = new Set(gameState.playedLevels || []);
+        this.currentLevel = gameState.currentLevel || null;
+        this.ballSpeed = gameState.ballSpeed || 300;
+        console.log('Stav hry načítaný:', gameState);
+      } else {
+        // Inicializácia nového stavu, ak neexistuje uložený stav
+        this.initializeNewGame();
+      }
+    } catch (error) {
+      console.error('Chyba pri načítaní stavu hry:', error);
+      this.initializeNewGame(); // Inicializácia, ak nastane chyba
+    }
+  }
+
+  initializeNewGame() {
+
+    localStorage.removeItem('gameState');
+    console.log('Hra bola resetovaná.');
+
+    this.score = 0;
+    this.PlayerLives = 3;
+    this.playedLevels = new Set();
+    this.currentLevel = null;
+    this.ballSpeed = 300;
+
+  }
 }
+
+
+

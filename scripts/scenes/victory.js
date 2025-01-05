@@ -50,6 +50,10 @@ export default class GameScene extends Phaser.Scene {
       homeButton.on('pointerup', () => {
         this.clickSound.play();
         homeButton.setTexture('homeButton'); // Zmena späť na normálny sprite
+        const playScene = this.scene.get('PlayScene');
+        if (playScene) {
+          playScene.initializeNewGame(); // Zavolaj resetovanie stavu hry
+        }
         this.scene.start('GameScene'); // Prepnutie na GameScene pri uvoľnení tlačidla
       });
       
