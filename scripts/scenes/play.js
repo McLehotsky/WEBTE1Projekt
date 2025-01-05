@@ -1,5 +1,7 @@
 import LevelLoader from './levelLoader.js';
 
+let gyroscopeEnabled = false;
+
 export default class PlayScene extends Phaser.Scene {
   constructor() {
     super({ key: 'PlayScene' });
@@ -150,7 +152,7 @@ export default class PlayScene extends Phaser.Scene {
 // Detekcia iOS zariadenia
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     
-if (isIOS) {
+if (isIOS && !gyroscopeEnabled) {
     // HTML tlačidlo pre gyroskop len na iOS
     const htmlButton = document.createElement('button');
     htmlButton.innerText = 'Enable Gyroscope';
@@ -176,6 +178,7 @@ if (isIOS) {
                 const permission = await DeviceOrientationEvent.requestPermission();
                 if (permission === 'granted') {
                     console.log('Gyroskop povolený!');
+                    gyroscopeEnabled = true;
                     this.enableGyroscope();
                     htmlButton.style.display = 'none'; // Skrytie tlačidla po povolení
                 } else {
@@ -186,6 +189,7 @@ if (isIOS) {
             }
         } else {
             console.log('Gyroskop povolenie nie je potrebné.');
+            gyroscopeEnabled = true;
             this.enableGyroscope();
             htmlButton.style.display = 'none'; // Skrytie tlačidla
         }
@@ -244,7 +248,7 @@ this.tiltX = 0;
   enableGyroscope() {
     window.addEventListener('deviceorientation', event => {
         if (event.gamma !== null) {
-            this.tiltX = event.gamma / 10; // Citlivosť
+            this.tiltX = event.gamma / 5; // Citlivosť
         }
     });
   }
