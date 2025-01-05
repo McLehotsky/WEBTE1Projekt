@@ -51,13 +51,11 @@ export default class PlayScene extends Phaser.Scene {
     this.load.image('tileThickPurple2', 'assets/images/tiles/tileThickPurple2.png');
     this.load.image('ball', 'assets/images/balls/ballYellow.png');
     this.load.image('particle', 'assets/images/ui/particle1.png');
-    this.load.image('extraLife', 'assets/images/ui/ExtraLife.png');
 
     // Načítanie zvukových efektov
     this.load.audio('bounce', 'assets/sounds/bounceSound.wav'); // Zvuk odrazu
     this.load.audio('explosion', 'assets/sounds/boom3.wav'); // Zvuk výbuchu
     this.load.audio('click', 'assets/sounds/mixkit-mouse-click-close-1113.wav');
-    this.load.audio('collect', 'assets/sounds/collectSound.wav');
 
     this.load.image('pauseButton', 'assets/images/ui/PauseButton.png');
     this.load.image('pauseButtonPressed', 'assets/images/ui/PauseButtonPressed.png');
@@ -84,10 +82,10 @@ export default class PlayScene extends Phaser.Scene {
 
     // Nastavenie world bounds (herného sveta)
     this.physics.world.setBounds(
-      0,                // Začiatok na X-osi
-      reservedTopSpace, // Začiatok na Y-osi (pod rezervovanou oblasťou)
-      worldWidth,       // Šírka sveta
-      worldHeight - reservedTopSpace // Výška sveta bez rezervovanej oblasti
+        0,                // Začiatok na X-osi
+        reservedTopSpace, // Začiatok na Y-osi (pod rezervovanou oblasťou)
+        worldWidth,       // Šírka sveta
+        worldHeight - reservedTopSpace // Výška sveta bez rezervovanej oblasti
     );
 
     // Transparentný panel
@@ -104,13 +102,12 @@ export default class PlayScene extends Phaser.Scene {
       this.playedLevels = new Set();
     }
 
-  //###############LOPTA##########################//
+//###############LOPTA##########################//
     // Pridanie lopty
     this.ball = this.physics.add.sprite(this.scale.width / 2, this.scale.height - 120, 'ball');
     this.ball.setCollideWorldBounds(true);
     this.ball.setBounce(1); // Nastavenie odrazu
     this.ball.setVelocity(200, -200); // Počiatočný pohyb lopty
-
     // Pridanie zvuku pri kolízii lopty so stenami
     this.ball.body.onWorldBounds = true;
     this.physics.world.on('worldbounds', body => {
@@ -118,67 +115,37 @@ export default class PlayScene extends Phaser.Scene {
         this.bounceSound.play(); // Prehrá zvuk odrazu
       }
     });
-
     // Kolízie medzi loptou a stenami
     this.physics.world.setBoundsCollision(true, true, true, false); // Zabráni loptu spadnúť dole
 
-  //###################PADDLE#######################//
+//###################PADDLE#######################//
     // Pridanie paddle na spodok obrazovky
     this.paddle = this.physics.add.sprite(
       this.scale.width / 2,  // X pozícia (stred obrazovky)
       this.scale.height - 50, // Y pozícia (20px nad spodkom)
       'paddle'
     );
-
     // Zabránenie padaniu paddle
     this.paddle.setCollideWorldBounds(true);
     this.paddle.body.immovable = true;
-
     // Kolízie medzi loptou a paddle
     this.physics.add.collider(this.ball, this.paddle, this.handleBallPaddleCollision, null, this);
 
-  //###################SCORE###################//
+//###################SCORE###################//
     // Skórovací systém
     this.scoreText = this.add.text(
       this.scale.width / 2, // Stred obrazovky
       25,                  // Vzdialenosť od vrchu
       `${this.score}`,      // Zobrazované skóre
       {
-        fontSize: '24px',
-        color: '#ffffff',
-        fontFamily: 'm6x11',
+          fontSize: '24px',
+          color: '#ffffff',
+          fontFamily: 'm6x11',
       }
-    ).setOrigin(0.5, 0.5); // Nastaví stred textu ako bod ukotvenia
-
-    this.PlayerLives = 3;
-
-    this.livesText = this.add.text(
-      10, // X pozícia (vľavo hore)
-      15, // Y pozícia (vľavo hore)
-      `Lives: `, // Počiatočný text
-      {
-        fontSize: '20px', // Veľkosť textu
-        fontFamily: 'm6x11', // Font
-        color: '#ffffff', // Farba textu (biela)
-      }
-    );
-
-    this.livesValueText = this.add.text(
-      60, // X pozícia (vedľa textu "Lives:")
-      15, // Y pozícia (vľavo hore)
-      `${this.PlayerLives}`, // Počiatočný text (len číslo)
-      {
-        fontSize: '20px', // Veľkosť textu
-        fontFamily: 'm6x11', // Font
-        color: '#ff0000', // Farba textu (červená)
-      }
-    );
-
-
+  ).setOrigin(0.5, 0.5); // Nastaví stred textu ako bod ukotvenia
 
   this.scoreText.setText(`${this.score}`); // Obnov skóre na obrazovke
 //###############CONTROLS##############//
-
     // Ovládanie paddle myšou
     this.input.on('pointermove', pointer => {
       this.paddle.x = Phaser.Math.Clamp(
@@ -186,33 +153,33 @@ export default class PlayScene extends Phaser.Scene {
           this.paddle.width / 2,                  // Minimálna hodnota
           worldWidth - this.paddle.width / 2      // Maximálna hodnota
       );
-    });
+  });
 
     // Ovládanie pomocou klávesnice
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    // Detekcia iOS zariadenia
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+// Detekcia iOS zariadenia
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     
-    if (isIOS && !gyroscopeEnabled) {
+if (isIOS && !gyroscopeEnabled) {
     // HTML tlačidlo pre gyroskop len na iOS
-      const htmlButton = document.createElement('button');
-      htmlButton.innerText = 'Enable Gyroscope';
-      htmlButton.style.position = 'absolute';
-      htmlButton.style.top = '50%';
-      htmlButton.style.left = '50%';
-      htmlButton.style.transform = 'translate(-50%, -50%)';
-      htmlButton.style.padding = '10px 20px';
-      htmlButton.style.fontSize = '18px';
-      htmlButton.style.backgroundColor = '#007bff';
-      htmlButton.style.color = '#fff';
-      htmlButton.style.border = 'none';
-      htmlButton.style.borderRadius = '5px';
-      htmlButton.style.cursor = 'pointer';
+    const htmlButton = document.createElement('button');
+    htmlButton.innerText = 'Enable Gyroscope';
+    htmlButton.style.position = 'absolute';
+    htmlButton.style.top = '50%';
+    htmlButton.style.left = '50%';
+    htmlButton.style.transform = 'translate(-50%, -50%)';
+    htmlButton.style.padding = '10px 20px';
+    htmlButton.style.fontSize = '18px';
+    htmlButton.style.backgroundColor = '#007bff';
+    htmlButton.style.color = '#fff';
+    htmlButton.style.border = 'none';
+    htmlButton.style.borderRadius = '5px';
+    htmlButton.style.cursor = 'pointer';
 
-      document.body.appendChild(htmlButton);
+    document.body.appendChild(htmlButton);
 
-      htmlButton.addEventListener('click', async () => {
+    htmlButton.addEventListener('click', async () => {
         console.log('HTML tlačidlo bolo stlačené');
         if (typeof DeviceOrientationEvent !== 'undefined' && 
             typeof DeviceOrientationEvent.requestPermission === 'function') {
@@ -235,32 +202,32 @@ export default class PlayScene extends Phaser.Scene {
             this.enableGyroscope();
             htmlButton.style.display = 'none'; // Skrytie tlačidla
         }
-      });
+    });
     } else {
-      // Pre ostatné zariadenia (Android) povolíme gyroskop automaticky
-      this.enableGyroscope();
+        // Pre ostatné zariadenia (Android) povolíme gyroskop automaticky
+        this.enableGyroscope();
     }
+    
     // Inicializácia gyroskopickej hodnoty
     this.tiltX = 0;
 
-  //###############SOUNDS##############//
-    // Vytvorenie zvukov
+//###############SOUNDS##############//
+      // Vytvorenie zvukov
     this.bounceSound = this.sound.add('bounce');
     this.explosionSound = this.sound.add('explosion');
     this.clickSound = this.sound.add('click');
-    this.collectSound = this.sound.add('collect');
 
-    // Pridaj event na stlačenie ESC pre pauzu
-    this.input.keyboard.on('keydown-ESC', () => {
-      this.scene.pause(); // Pauznutie hry
-      this.scene.launch('PauseScene'); // Spustenie PauseMenu scény
+      // Pridaj event na stlačenie ESC pre pauzu
+      this.input.keyboard.on('keydown-ESC', () => {
+        this.scene.pause(); // Pauznutie hry
+        this.scene.launch('PauseScene'); // Spustenie PauseMenu scény
     });
 
     // Pause button
     const pauseButton = this.add.image(
-      worldWidth - 30,       // Pravý horný roh
-      reservedTopSpace / 2,  // Vertikálne zarovnanie s textom skóre
-      'pauseButton'
+        worldWidth - 30,       // Pravý horný roh
+        reservedTopSpace / 2,  // Vertikálne zarovnanie s textom skóre
+        'pauseButton'
     ).setInteractive();
 
     pauseButton.on('pointerdown', () => {
@@ -269,23 +236,24 @@ export default class PlayScene extends Phaser.Scene {
 
     pauseButton.on('pointerup', () => {
       this.clickSound.play();
-      pauseButton.setTexture('pauseButton');
-      this.scene.pause(); // Pauznutie hry
-      this.scene.launch('PauseScene'); // Spustenie PauseMenu scény
+        pauseButton.setTexture('pauseButton');
+        this.scene.pause(); // Pauznutie hry
+        this.scene.launch('PauseScene'); // Spustenie PauseMenu scény
     });
 
     this.children.list.forEach((child) => {
       if (child instanceof Phaser.GameObjects.Sprite) {
-        child.setScale(1.5); // Zväčšenie spriteov
+          child.setScale(1.5); // Zväčšenie spriteov
       }
     });
+
   }
 
   enableGyroscope() {
     window.addEventListener('deviceorientation', event => {
-      if (event.gamma !== null) {
-          this.tiltX = event.gamma / 5; // Citlivosť
-      }
+        if (event.gamma !== null) {
+            this.tiltX = event.gamma / 5; // Citlivosť
+        }
     });
   }
 
@@ -293,17 +261,16 @@ export default class PlayScene extends Phaser.Scene {
     // Resetovanie rýchlosti paddle
     this.paddle.setVelocityX(0);
     
-  //############INPUT##########//
+//############INPUT##########//
     // Ovládanie paddle pomocou gyroskopu
     if (this.tiltX !== undefined) {
       this.paddle.x += this.tiltX;
       this.paddle.x = Phaser.Math.Clamp(
-        this.paddle.x,
-        this.paddle.width / 2,
-        this.scale.width - this.paddle.width / 2
+          this.paddle.x,
+          this.paddle.width / 2,
+          this.scale.width - this.paddle.width / 2
       );
-    }
-
+  }
     // Klávesnica - umožní prepísanie myšou
     if (this.cursors.left.isDown) {
       this.paddle.setVelocityX(-300);
@@ -313,15 +280,12 @@ export default class PlayScene extends Phaser.Scene {
       this.paddle.setVelocityX(0); // Zastavenie, ak sa klávesy nepoužívajú
     }
 
-  //########BALL########//
+//########BALL########//
     // Kontrola, či lopta spadla
     if (this.ball.y > this.scale.height) {
       this.resetBall(); // Reštart lopty
       this.PlayerLives -= 1;
       console.log(`Lives ${this.PlayerLives}...`);
-
-      // Aktualizácia textu životov
-      this.livesValueText.setText(`${this.PlayerLives}`);
     }
 
     if(this.PlayerLives <= 0)
@@ -445,11 +409,6 @@ export default class PlayScene extends Phaser.Scene {
       tile.destroy();
       this.increaseScore(10);
       this.checkLevelComplete();
-
-      // Náhodné spawnovanie powerupu
-      if (Math.random() < 0.02) { // 2% šanca na spawn
-        this.spawnPowerUp(tile.x, tile.y);
-      }
     }
   }
 
@@ -540,46 +499,8 @@ export default class PlayScene extends Phaser.Scene {
     } catch (error) {
       console.error('Chyba pri načítaní ďalšieho levelu:', error);
     }
-
-    // Vyber náhodný level z dostupných
-    const randomIndex = Math.floor(Math.random() * remainingLevels.length);
-    const nextLevel = remainingLevels[randomIndex].level;
-
-    // Pridaj level do zoznamu odohraných
-    this.playedLevels.add(nextLevel);
-
-    console.log(`Načítavam náhodný level ${nextLevel}...`);
-    await this.loadLevel(nextLevel); // Volanie asynchrónnej funkcie na načítanie levelu
-    this.resetBall();
   }
 
-  /*
-  FUNKCIA NA SPAWNOVANIE POWERUPU
-  */
-  spawnPowerUp(x, y) {
-    const powerUp = this.physics.add.sprite(x, y, 'extraLife');
-    powerUp.setVelocityY(50); // Pomaly padá smerom dole
-    powerUp.setScale(1.2); // Prípadné zväčšenie
-    powerUp.setTint(0x9e1c2c);
-
-    this.physics.add.collider(this.paddle, powerUp, this.collectPowerUp, null, this); // Kolízia s paddle
-
-  }
-
-  /*
-  FUNKCIA NA DETEKCIU POWERUPU
-  */
-  collectPowerUp(paddle, powerUp) {
-    powerUp.destroy(); // Odstráni powerup zo scény
-    if (this.PlayerLives < 3) {
-      this.collectSound.play();
-      this.PlayerLives += 1; // Pridanie extra života
-      console.log(`Lives: ${this.PlayerLives}`);
-    }
-
-    // Aktualizácia textu životov
-    this.livesValueText.setText(`${this.PlayerLives}`);
-  }
 
   /*
   FUNKCIA NA KONIEC HRY - PREHRA
