@@ -3,6 +3,7 @@ import PlayScene from './scenes/play.js';
 import GameOverScene from './scenes/gameOver.js'
 import GameVictoryScene from './scenes/victory.js'
 import PauseScene from './scenes/pause.js'
+import HowToPlayScene from './scenes/howToPlay.js'
 
 
 const config = {
@@ -22,7 +23,7 @@ const config = {
       debug: false,
     },
   },
-  scene: [GameScene, PlayScene, GameOverScene, GameVictoryScene, PauseScene], // Zoznam scén
+  scene: [GameScene, PlayScene, GameOverScene, GameVictoryScene, PauseScene, HowToPlayScene], // Zoznam scén
   backgroundColor: '#022D36' // Nastavenie čierneho pozadia
 };
 
