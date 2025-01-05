@@ -64,6 +64,10 @@ export default class PauseMenu extends Phaser.Scene {
         restartButton.on('pointerup', () => {
             this.clickSound.play();
             restartButton.setTexture('restartButton'); // Zmena späť na normálny sprite
+            const playScene = this.scene.get('PlayScene');
+            if (playScene) {
+              playScene.initializeNewGame(); // Zavolaj resetovanie stavu hry
+            }
             this.scene.stop();
             this.scene.stop('PlayScene');
             this.scene.start('PlayScene'); // Prepnutie na PlayScene pri uvoľnení tlačidla

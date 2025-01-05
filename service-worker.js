@@ -1,4 +1,4 @@
-const CACHE_NAME = 'breakout-game-cache-v1';
+const CACHE_NAME = 'breakout-game-cache-v1.1';
 const ASSETS = [
     './', // Root
     './index.html',
