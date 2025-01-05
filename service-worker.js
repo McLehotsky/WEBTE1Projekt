@@ -1,4 +1,4 @@
-const CACHE_NAME = 'el-smasher-cache-v1.0';
+const CACHE_NAME = 'el-smasher-cache-v1.01';
 const ASSETS = [
     './', // Root
     './index.html',
