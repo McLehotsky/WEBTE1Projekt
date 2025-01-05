@@ -6,6 +6,8 @@ export default class GameScene extends Phaser.Scene {
   preload() {
     this.load.image('playButton', 'assets/images/ui/PlayButton.png');
     this.load.image('playButtonPressed', 'assets/images/ui/PlayButtonpressed.png');
+    this.load.image('continueButton', 'assets/images/ui/ContinueButton.png');
+    this.load.image('continueButtonPressed', 'assets/images/ui/ContinueButtonPressed.png');
     this.load.image('howToPlay', 'assets/images/ui/HowToPlay.png');
     this.load.image('howToPlayPressed', 'assets/images/ui/HowToPlayPressed.png');
 
@@ -15,11 +17,13 @@ export default class GameScene extends Phaser.Scene {
   }
 
   create() {
+    const savedLevel = localStorage.getItem('currentLevel');
+
     const { width, height } = this.scale; // Získanie šírky a výšky scény
 
     // Pridanie textu na stred obrazovky
-    this.add.text(width / 2, height / 2 - 100, 'EL Smasher', {
-      fontSize: '60px',
+    this.add.text(width / 2, height / 2 - 120, 'EL Smasher', {
+      fontSize: '65px',
       fill: '#fff',
       fontFamily: 'm6x11' 
     }).setOrigin(0.5); // Nastavenie stredu textu ako referenčného bodu
@@ -27,7 +31,7 @@ export default class GameScene extends Phaser.Scene {
     this.clickSound = this.sound.add('click');
 
     // Play Button
-    const playButton = this.add.sprite(width / 2, height / 2 + 40, 'playButton').setInteractive();
+    const playButton = this.add.sprite(width / 2, height / 2 + 60, 'playButton').setInteractive();
     playButton.setOrigin(0.5); // Nastavenie stredu tlačidla ako referenčného bodu
 
     playButton.on('pointerdown', () => {
@@ -44,8 +48,35 @@ export default class GameScene extends Phaser.Scene {
       playButton.setTexture('playButton'); // Zmena späť na normálny sprite, ak ukazovateľ opustí tlačidlo
     });
 
+    const continueTexture = savedLevel && savedLevel !== 'null'
+            ? 'continueButton' // Aktívna textúra
+            : 'continueButtonPressed'; // Neaktívna textúra
+
+    // Continue Button
+    const continueButton = this.add.sprite(width / 2, height / 2 - 10, continueTexture);
+    continueButton.setOrigin(0.5);
+
+    if (savedLevel && savedLevel !== 'null') {
+      continueButton.setInteractive();
+
+      continueButton.on('pointerdown', () => {
+        continueButton.setTexture('continueButtonPressed');
+      });
+  
+      continueButton.on('pointerup', () => {
+        this.clickSound.play();
+        continueButton.setTexture('continueButton'); // Zmena späť na normálny sprite
+        this.scene.start('PlayScene'); // Prepnutie na PlayScene pri uvoľnení tlačidla
+      });
+  
+      continueButton.on('pointerout', () => {
+        continueButton.setTexture('continueButton'); // Zmena späť na normálny sprite, ak ukazovateľ opustí tlačidlo
+      });    
+    }
+
+
     // How To Play Button
-    const howToPlay = this.add.sprite(width / 2, height / 2 + 120, 'howToPlay').setInteractive();
+    const howToPlay = this.add.sprite(width / 2, height / 2 + 130, 'howToPlay').setInteractive();
     howToPlay.setOrigin(0.5); // Nastavenie stredu tlačidla ako referenčného bodu
 
     howToPlay.on('pointerdown', () => {
