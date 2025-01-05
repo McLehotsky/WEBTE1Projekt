@@ -193,6 +193,7 @@ export default class PlayScene extends Phaser.Scene {
   update() {
     // Resetovanie rýchlosti paddle
     this.paddle.setVelocityX(0);
+    
 //############INPUT##########//
     // Klávesnica - umožní prepísanie myšou
     if (this.cursors.left.isDown) {
@@ -202,6 +203,7 @@ export default class PlayScene extends Phaser.Scene {
     } else {
       this.paddle.setVelocityX(0); // Zastavenie, ak sa klávesy nepoužívajú
     }
+
 //########BALL########//
     // Kontrola, či lopta spadla
     if (this.ball.y > this.scale.height) {
@@ -399,7 +401,7 @@ export default class PlayScene extends Phaser.Scene {
 
     if (remainingLevels.length === 0) {
       console.log('Žiadne ďalšie levely, ukončenie hry.');
-      // this.endGame();
+      this.endGame();
       return;
     }
 
@@ -417,11 +419,18 @@ export default class PlayScene extends Phaser.Scene {
 
 
   /*
-  FUNKCIA NA KONIEC HRY
+  FUNKCIA NA KONIEC HRY - PREHRA
    */
   GameOver() {
-    console.log('Hra skončila!');
-    this.scene.start('GameOverScene'); // Prepnutie na scénu Game Over (ak existuje)
+    this.scene.start('GameOverScene', {currentScore: this.score}); // Prepnutie na scénu Game Over (ak existuje)
+    this.scene.stop();
+  }
+
+  /*
+  FUNKCIA NA KONIEC HRY - VYHRA
+   */
+  endGame() {
+    this.scene.start('GameVictoryScene', {currentScore: this.score}); // Prepnutie na scénu Victory (ak existuje)
     this.scene.stop();
   }
 }
