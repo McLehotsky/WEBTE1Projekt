@@ -17,7 +17,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   create() {
-    const savedLevel = localStorage.getItem('currentLevel');
+    // const savedLevel = localStorage.getItem('currentLevel');
 
     const { width, height } = this.scale; // Získanie šírky a výšky scény
 
@@ -41,6 +41,10 @@ export default class GameScene extends Phaser.Scene {
     playButton.on('pointerup', () => {
       this.clickSound.play();
       playButton.setTexture('playButton'); // Zmena späť na normálny sprite
+      const playScene = this.scene.get('PlayScene');
+      if (playScene) {
+        playScene.initializeNewGame(); // Zavolaj resetovanie stavu hry
+      }
       this.scene.start('PlayScene'); // Prepnutie na PlayScene pri uvoľnení tlačidla
     });
 
@@ -48,31 +52,51 @@ export default class GameScene extends Phaser.Scene {
       playButton.setTexture('playButton'); // Zmena späť na normálny sprite, ak ukazovateľ opustí tlačidlo
     });
 
-    const continueTexture = savedLevel && savedLevel !== 'null'
-            ? 'continueButton' // Aktívna textúra
-            : 'continueButtonPressed'; // Neaktívna textúra
 
-    // Continue Button
+
+
+    const savedState = localStorage.getItem('gameState');
+    let gameState = null;
+    
+    // Skontroluj, či existuje uložený stav a načítaj ho
+    if (savedState) {
+      try {
+        gameState = JSON.parse(savedState);
+        console.log('Načítaný stav hry:', gameState);
+      } catch (error) {
+        console.error('Chyba pri parsovaní uloženého stavu:', error);
+      }
+    }
+    
+    // Nastavenie textúry tlačidla Continue
+    const continueTexture = gameState && gameState.currentLevel !== null
+      ? 'continueButton'
+      : 'continueButtonPressed';
+    
     const continueButton = this.add.sprite(width / 2, height / 2 - 10, continueTexture);
     continueButton.setOrigin(0.5);
-
-    if (savedLevel && savedLevel !== 'null') {
+    
+    // Ak je hra uložená, nastav interaktivitu tlačidla
+    if (gameState && gameState.currentLevel !== null) {
       continueButton.setInteractive();
-
+    
       continueButton.on('pointerdown', () => {
         continueButton.setTexture('continueButtonPressed');
       });
-  
+    
       continueButton.on('pointerup', () => {
         this.clickSound.play();
-        continueButton.setTexture('continueButton'); // Zmena späť na normálny sprite
-        this.scene.start('PlayScene'); // Prepnutie na PlayScene pri uvoľnení tlačidla
+        continueButton.setTexture('continueButton');
+        this.scene.start('PlayScene', { level: gameState.currentLevel }); // Prenes level
       });
-  
+    
       continueButton.on('pointerout', () => {
-        continueButton.setTexture('continueButton'); // Zmena späť na normálny sprite, ak ukazovateľ opustí tlačidlo
-      });    
+        continueButton.setTexture('continueButton');
+      });
+    } else {
+      console.log('Žiadna uložená hra.');
     }
+    
 
 
     // How To Play Button
